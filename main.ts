@@ -39,7 +39,7 @@ class MyStack extends TerraformStack {
       source: my_asset.path,
     });
 
-    new google.cloudfunctions2Function.Cloudfunctions2Function(this, 'my_function', {
+    const my_function = new google.cloudfunctions2Function.Cloudfunctions2Function(this, 'my_function', {
       buildConfig: {
         entryPoint: 'HelloGet',
         runtime: 'go119',
@@ -58,6 +58,20 @@ class MyStack extends TerraformStack {
         serviceAccountEmail: my_service_account.email,
       },
     });
+
+    const data_policy = new google.dataGoogleIamPolicy.DataGoogleIamPolicy(this, 'data_policy', {
+      binding: [{
+        role: 'roles/cloudfunctions.invoker',
+        members: ['allUsers'],
+      }],
+    });
+
+    new google.cloudfunctions2FunctionIamPolicy.Cloudfunctions2FunctionIamPolicy(this, 'my_policy', {
+      cloudFunction: my_function.name,
+      location: region,
+      policyData: data_policy.policyData,
+    });
+
   }
 }
 
