@@ -1,2 +1,2 @@
 # fluffy-carnival
-GCP Cloud Run Pub/Sub
+GCP Cloud Functions
