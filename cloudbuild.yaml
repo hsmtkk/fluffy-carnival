@@ -1,0 +1,28 @@
+---
+steps:
+  - name: gcr.io/kaniko-project/executor:latest
+    id: docker
+    waitFor: ['-']
+    args:
+      - --cache=true
+      - --cache-ttl=168h
+      - --destination=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${COMMIT_SHA}
+      - --destination=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:latest
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: deploy
+    waitFor: ['docker']
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE}
+      - --image
+      - ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/${_SERVICE}:${COMMIT_SHA}
+      - --region
+      - ${_REGION}
+
+substitutions:
+  _SERVICE: my-service
+  _REGION: asia-northeast1
+  _REPOSITORY: my-repository
