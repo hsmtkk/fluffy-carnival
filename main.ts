@@ -59,15 +59,17 @@ class MyStack extends TerraformStack {
       },
     });
 
+    // Cloud Run permission must be provided
+
     const data_policy = new google.dataGoogleIamPolicy.DataGoogleIamPolicy(this, 'data_policy', {
       binding: [{
-        role: 'roles/cloudfunctions.invoker',
+        role: 'roles/run.invoker',
         members: ['allUsers'],
       }],
     });
 
-    new google.cloudfunctions2FunctionIamPolicy.Cloudfunctions2FunctionIamPolicy(this, 'my_policy', {
-      cloudFunction: my_function.name,
+    new google.cloudRunServiceIamPolicy.CloudRunServiceIamPolicy(this, 'my_policy', {
+      service: my_function.name,
       location: region,
       policyData: data_policy.policyData,
     });
